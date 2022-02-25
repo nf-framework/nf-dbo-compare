@@ -1,0 +1,31 @@
+{
+  "name": "@nfjs/dbo-compare",
+  "version": "1.0.0",
+  "description": "Database objects comparing",
+  "license": "MIT",
+  "type": "module",
+  "main": "index.js",
+  "repository": {
+    "url": "https://github.com/nf-framework/nf-dbo-compare.git"
+  },
+  "author": {
+    "name": "Andrey Maksimov",
+    "email": "andrmaxmail@gmail.com"
+  },
+  "contributors": [
+    {
+      "name": "Dmitry Boikov",
+      "email": "boikovdv@gmail.com"
+    },
+    {
+      "name": "Azat Yamalov",
+      "email": "yamalov.azat@live.com"
+    }
+  ],
+  "dependencies": {
+    "pg": "^8.3.0"
+  },
+  "exports": {
+    ".": "./index.js"
+  }
+}
