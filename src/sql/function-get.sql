@@ -12,7 +12,7 @@ select p.proname as name,
                  (case when pt.typelem = 0 then false else true end) else null end) as "resTypeIsArray",
        p.proretset as retset,
        proargnames as argnames,
-       p.proargmodes as argmodes,
+       p.proargmodes::text[] as argmodes,
        (select array_agg(jsonb_build_object(
                                  'name', (case when pt.typelem = 0 then pt.typname else ptelem.typname end),
                                  'isArray',(case when pt.typelem = 0 then false else true end)) order by aat.nr)
