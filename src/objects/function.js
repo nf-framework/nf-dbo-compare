@@ -143,7 +143,7 @@ class DboFunction extends Dbo {
             if (!needDropOld && (newObj.resKind !== oldObj.resKind ||
                 newObj.resType !== oldObj.resType ||
                 newObj.resTypeIsArray !== oldObj.resTypeIsArray)) needDropOld = true;
-            // если не совпадают определеяющие параметры функции добавим удаление старой
+            // если не совпадают определяющие параметры функции добавим удаление старой
             if (!needDropOld) {
                 let sameArgs = ((oldObj.args || []).length === (newObj.args || []).length);
                 if (sameArgs) {
@@ -160,8 +160,8 @@ class DboFunction extends Dbo {
                 needDropOld = !sameArgs;
             }
             if (needDropOld) {
-                const __args = (oldObj.args || []).filter(a => a.mode !== 'o')
-                    .map(m => (m.type + (m.typeIsArray ? '[]' : '')))
+                const __args = (oldObj.args || [])
+                    .map(m => `${m.mode} ${m.type + (m.typeIsArray ? '[]' : '')}`)
                     .join(',');
                 dropOldText = `drop function if exists ${oldObj.schema}.${oldObj.name}(${(__args) || ''});`;
             }
