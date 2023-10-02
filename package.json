@@ -1,6 +1,6 @@
 {
   "name": "@nfjs/dbo-compare",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Database objects comparing",
   "license": "MIT",
   "type": "module",
