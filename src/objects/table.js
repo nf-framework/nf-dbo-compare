@@ -171,10 +171,10 @@ function updColumn(columnNew, columnOld) {
     if (columnOld.name !== columnNew.name) {
         script.rename = `alter table ${table} rename column ${columnOld.name} to ${columnNew.name};`;
     }
-    if (columnOld.datatype !== columnNew.datatype || columnOld.datatype_length !== columnNew.datatype_length) {
+    if (columnOld.datatype !== columnNew.datatype || (columnOld.datatype_length ?? null) !== (columnNew.datatype_length ?? null)) {
         script.datatype = `alter table ${table} alter column ${columnNew.name} type ${columnNew.datatype}${((columnNew.datatype_length) ? `(${columnNew.datatype_length})` : '')};`;
     }
-    if (columnOld.default_value !== columnNew.default_value) {
+    if ((columnOld.default_value ?? null) !== (columnNew.default_value ?? null)) {
         if (columnNew.default_value) {
             script.default = `alter table ${table} alter column ${columnNew.name} set default ${columnNew.default_value}::${columnNew.datatype};`;
         } else {
@@ -188,7 +188,7 @@ function updColumn(columnNew, columnOld) {
             script.dropNotNull = `alter table ${table} alter column ${columnNew.name} drop not null;`;
         }
     }
-    if ('identity' in columnOld && 'identity' in columnNew && columnOld.identity !== columnNew.identity) {
+    if ('identity' in columnOld && 'identity' in columnNew && (columnOld.identity ?? null) !== (columnNew.identity ?? null)) {
         if (isEmpty(columnNew.identity)) {
             script.identity += `alter table ${table} alter column ${columnNew.name} drop identity if exists;`;
         } else {
@@ -200,7 +200,7 @@ function updColumn(columnNew, columnOld) {
             }
         }
     }
-    if (columnOld.comment !== columnNew.comment) {
+    if ((columnOld.comment ?? null) !== (columnNew.comment ?? null)) {
         script.comment = `comment on column ${table}.${columnNew.name} is '${columnNew.comment}';`;
     }
     return script;
@@ -358,12 +358,12 @@ function updIndex(indxNew, indxOld, simple = false) {
 
 class DboTable extends Dbo {
     /**
-     * Сравнение и получение скрипта изменнеия от одной версии объекта к другой
+     * Сравнение и получение скрипта изменения от одной версии объекта к другой
      * @param {TableDboType} newObj
      * @param {TableDboType} oldObj
      * @param {Object} options - дополнительные параметры сравнения
      * @param {boolean} [options.simple] - упрощенное сравнение
-     * @param {function} [options.checkObjName] - кастомная функция выяснения, что делать с более не присуствующими индексами и ограничениями
+     * @param {function} [options.checkObjName] - кастомная функция выяснения, что делать с более не присутствующими индексами и ограничениями
      * @returns {DiffResultDboType}
      */
     static diff(newObj, oldObj, options= {}) {
@@ -537,15 +537,21 @@ class DboTable extends Dbo {
 
     /**
      * Объединение детального результата изменения таблицы в один скрипт
-     * @param {DiffResultDboType} diffRes - результат сравнения таблицы с предыущим состоянием
+     * @param {DiffResultDboType} diffRes - результат сравнения таблицы с предыдущим состоянием
      * @returns {string}
      */
     static diffToScript(diffRes) {
-        return [...diffRes.safedrop, ...diffRes.unsafedrop, ...diffRes.main, ...diffRes.pkey, ...diffRes.end].join('\r\n');
+        return [
+            ...(diffRes.safedrop ?? []),
+            ...(diffRes.unsafedrop ?? []),
+            ...(diffRes.main ?? []),
+            ...(diffRes.pkey ?? []),
+            ...(diffRes.end ?? [])
+        ].join('\r\n');
     }
 
     /**
-     * Поиск полей таблиц, которые можно использовать как вывод человекочитаемых данных по переданным внешним ключам таблицы
+     * Поиск полей таблиц, которые можно использовать как вывод человеко-читаемых данных по переданным внешним ключам таблицы
      * @param {Client} connect - соединение с базой данных
      * @param {Array<constraint>} refCons - внешние ключи таблицы
      * @returns {Promise<Array<RefColDboType>>}
@@ -562,4 +568,15 @@ class DboTable extends Dbo {
 
 DboTable._getSql = await readFile(dirJoin(import.meta.url,'../sql/table-get.sql'),'utf8');
 
-export { DboTable };
+export {
+    DboTable,
+    addColumn,
+    updColumn,
+    delColumn,
+    addConstraint,
+    updConstraint,
+    delConstraint,
+    addIndex,
+    updIndex,
+    delIndex
+};
